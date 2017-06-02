@@ -2,12 +2,15 @@ import subprocess
 import sys
 
 def get(call, test, fileName):
-	link = "http://images.dmzj.com/b/%E5%BF%85%E7%84%B6%E6%80%A7%E6%8C%87%E5%8D%97%EF%BD%9E%E7%A5%9E%E6%98%8E%E4%BB%AC%E7%9A%84%E6%81%8B%E7%88%B1%E4%BB%A3%E7%90%86%EF%BD%9E/%E7%AC%AC03%E8%AF%9D/image"
+	# Preview the resource link and know its naming format e.g img001,img002 etc
+	link = "http://images/whatever/F%9D/image"
+	# add or adjust different commands as you see fit.
 	command1 = "curl -L -H 'Referer: "
 	command2 = "nohup wget --referer='"
 	suffix = ".jpg"
 	pages = 17
-	startingPage = 185
+	startingPage = 185 # starting page depends on your resource naming format
+	# Choose your prefered conversion method.
 	compilePDF = "convert *"+suffix+" "+fileName+".pdf"
 	imgStat = False
 	for i in range(pages):
