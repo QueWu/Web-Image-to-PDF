@@ -9,7 +9,7 @@ Prerequisites:
 
 Run (in terminal):
 > python3 getImg.py curl outputPDF
-or
+
 > python3 getImg.py curl test outputPDF
 
 Use either curl or wget or any custom command of your choice.
