@@ -1,4 +1,5 @@
 # Web-Image-to-PDF
+For first timers with python3 and linux. Play around and explore.
 Downloads multiple images from the web and compiles a PDF
 
 This is intended to run on linux system.
