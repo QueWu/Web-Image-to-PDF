@@ -83,7 +83,7 @@ def select_plot(fileName):
     #sig = sig[threshold_cut(sig):]
     #sig = sig[:threshold_cut_rear(sig)]
     segs = segmentation(sig)
-    plot(sig)
+    #plot(sig)
     #plot(sig[segs[0][0]])
     #testArr = np.array(sig).ravel()
     #sig = sec_cut(testArr)
@@ -98,10 +98,11 @@ def plot(inArr):
     plt.show()
 
 def segmentation(inSig):
-    slience_threshold = 22000
+    slience_threshold = 20000
     segments = []
     segments_holder = []
     dummy_i = []
+    post = []
     combo = 0
     ref_point = 0
     #inSig = np.array(inSig).ravel()
@@ -119,7 +120,14 @@ def segmentation(inSig):
             segments_holder.append(segments)
             segments = []
             combo = 0
-        
+    #segments_holder = np.array(segments_holder).ravel()[1:]
+    j = 1
+    while(j < len(dummy_i)-1):
+        if(dummy_i[j+1] - dummy_i[j] != 1):
+            post.extend(inSig[dummy_i[j]:dummy_i[j+1]])
+            plot(post)
+        j+=2
+        post = []
     '''for i in range(len(inSig)):
         if(sum(inSig[i:i+10000][0])<=slience_threshold):
             segments.append(i)
@@ -131,10 +139,10 @@ def segmentation(inSig):
             elif(len(inSig)-segments[-1]<slience_threshold):
                 slience_threshold = len(inSig)-segments[-1]'''
     
-    print(segments_holder)
-    for xc in dummy_i:
-        plt.axvline(x=xc)
-    plt.plot(inSig)
+    #plot(post)
+    #for xc in dummy_i:
+        #plt.axvline(x=xc)
+    #plt.plot(inSig)
     return segments_holder
             
         
