@@ -5,11 +5,12 @@ from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate as interpol
+import time as timer
 
 
 def initRec(handle):
     FORMAT = pyaudio.paInt16
-    RECORD_SECONDS = 2.5
+    #RECORD_SECONDS = 5
     CHANNELS = 2
     RATE = 44100
     CHUNK = 1024
@@ -17,7 +18,7 @@ def initRec(handle):
     global dummyArr
     global currentShape
     #WAVE_OUTPUT_FILENAME = "../file_" + str(wavID(seed)) + ".wav"
-    WAVE_OUTPUT_FILENAME = "audio_clips/"+handle
+    WAVE_OUTPUT_FILENAME = handle
 
     audio = pyaudio.PyAudio()
 
@@ -25,17 +26,26 @@ def initRec(handle):
     stream = audio.open(format=FORMAT, channels=CHANNELS,
                     rate=RATE, input=True,
                     frames_per_buffer=CHUNK)
-
-    print("Recording Status ON for: ["+handle+"]")
     frames = []
-
-    for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+    start = timer.time()
+    while(True):
+        print("Recording Status ON for: ["+handle+"]")
+        userIn = input("q for Quit")
+        if(userIn == "q"):
+            stream.stop_stream()
+            RECORD_SECONDS = timer.time() - start
+            print("Recording Stopped ")
+            break
         data = stream.read(CHUNK)
         frames.append(data)
-    print("Recording Stopped ")
-
+    
+    
+    '''for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+        data = stream.read(CHUNK)
+        frames.append(data)'''
+    
     # stop Recording
-    stream.stop_stream()
+    
     stream.close()
     audio.terminate()
 
@@ -83,7 +93,7 @@ def select_plot(fileName):
     #sig = sig[threshold_cut(sig):]
     #sig = sig[:threshold_cut_rear(sig)]
     segs = segmentation(sig)
-    #plot(sig)
+    plot(sig)
     #plot(sig[segs[0][0]])
     #testArr = np.array(sig).ravel()
     #sig = sec_cut(testArr)
@@ -100,50 +110,34 @@ def plot(inArr):
 def segmentation(inSig):
     slience_threshold = 20000
     segments = []
-    segments_holder = []
-    dummy_i = []
     post = []
     combo = 0
     ref_point = 0
-    #inSig = np.array(inSig).ravel()
+    
     for i in range(len(inSig)):
         if((inSig[i][0]<0.003 and inSig[i][0]>-0.003)):
             combo+=1
         else:
             combo=0
         if(combo==slience_threshold):
-            dummy_i.append(i-slience_threshold+1)
-            dummy_i.append(i)
-            ref_point = i-slience_threshold+1
-            segments.extend((ref_point,i))
-            #segments.append(i)
-            segments_holder.append(segments)
-            segments = []
-            combo = 0
-    #segments_holder = np.array(segments_holder).ravel()[1:]
-    j = 1
-    while(j < len(dummy_i)-1):
-        if(dummy_i[j+1] - dummy_i[j] != 1):
-            post.extend(inSig[dummy_i[j]:dummy_i[j+1]])
-            plot(post)
-        j+=2
-        post = []
-    '''for i in range(len(inSig)):
-        if(sum(inSig[i:i+10000][0])<=slience_threshold):
+            segments.append(i-slience_threshold+1)
             segments.append(i)
-            #head+=1
-            if(len(segments)==slience_threshold and segments[-1]<=len(inSig)):
-                #slience = True
-                segments_holder.append(segments)
-                segments = []
-            elif(len(inSig)-segments[-1]<slience_threshold):
-                slience_threshold = len(inSig)-segments[-1]'''
+            ref_point = i-slience_threshold+1
+            combo = 0
+            
+    j = 1
+    while(j < len(segments)-1):
+        if(segments[j+1] - segments[j] != 1):
+            post.extend(inSig[segments[j]:segments[j+1]])
+            #plot(post)
+        j+=2
+        #post = []
     
     #plot(post)
-    #for xc in dummy_i:
+    #for xc in segments:
         #plt.axvline(x=xc)
     #plt.plot(inSig)
-    return segments_holder
+    return post
             
         
 
@@ -176,4 +170,9 @@ def sec_cut(newAudio):
         arrOut = arrInterpol(np.linspace(0,newAudio.size-1,88200))
     return arrOut
 
-select_plot("train_10_many.wav")
+
+initRec("long_rec_test.wav")
+select_plot("long_rec_test.wav")
+
+
+
